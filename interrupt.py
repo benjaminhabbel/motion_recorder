@@ -24,6 +24,9 @@ GPIO.setup(BLUE_PIN, GPIO.OUT)
 
 # Dictionary definieren. http://www.tutorialspoint.com/python/python_dictionary.htm
 status = "idle"
+GPIO.output(BLUE_PIN, GPIO.HIGH)
+
+print("waiting for input")
 
 def white_off():
     GPIO.output(BLUE_PIN, GPIO.LOW)
@@ -32,6 +35,7 @@ def white_off():
 
 # InternalStartGeschichte
 def start_recording(pin):
+    global status
     if status == "idle":
         status = "switching"
         white_off()
@@ -49,6 +53,7 @@ def start_recording(pin):
 
 
 def stop_recording(pin):
+    global status
     if status == "recording":
         status = "switching"
         white_off()
