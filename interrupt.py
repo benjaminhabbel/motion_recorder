@@ -38,7 +38,7 @@ def white_off():
     GPIO.output(GREEN_PIN, GPIO.LOW)
 
 # InternalStartGeschichte
-def start_recording():
+def start_recording(pin):
     global status
     if status == "idle":
         status = "switching"
@@ -56,7 +56,7 @@ def start_recording():
         status = "recording"
 
 
-def stop_recording():
+def stop_recording(pin):
     global status
     if status == "recording":
         status = "switching"
@@ -69,20 +69,11 @@ def stop_recording():
         GPIO.output(BLUE_PIN, GPIO.HIGH)
         status = "idle"
 
-def button_handler(pin):
-    global status
-    if status == "recording":
-        stop_recording()
-    elif status == "idle":
-        start_recording()
-    else:
-        pass
 
 try:
     # Interrupt Event hinzufuegen. Auf steigende Flanke reagieren und ISR "Interrupt" deklarieren sowie Pin entprellen
-    #GPIO.add_event_detect(TASTER_1, GPIO.RISING, callback=start_recording, bouncetime=200)
-    #GPIO.add_event_detect(TASTER_2, GPIO.RISING, callback=stop_recording, bouncetime=200)
-    GPIO.add_event_detect(TASTER_1, GPIO.RISING, callback=button_handler, bouncetime=1000)
+    GPIO.add_event_detect(TASTER_1, GPIO.RISING, callback=start_recording, bouncetime=200)
+    GPIO.add_event_detect(TASTER_2, GPIO.RISING, callback=stop_recording, bouncetime=200)
     # keep script running
     while True:
         time.sleep(0.5)
