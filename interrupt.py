@@ -69,7 +69,7 @@ def stop_recording():
         GPIO.output(BLUE_PIN, GPIO.HIGH)
         status = "idle"
 
-def button_handler():
+def button_handler(pin):
     global status
     if status == "recording":
         stop_recording()
