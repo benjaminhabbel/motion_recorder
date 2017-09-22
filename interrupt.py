@@ -2,6 +2,7 @@
 import RPi.GPIO as GPIO
 import time
 import subprocess
+import os
 
 #GPIO Pins
 TASTER_1 = 37
@@ -26,6 +27,9 @@ GPIO.setup(BLUE_PIN, GPIO.OUT)
 status = "idle"
 GPIO.output(BLUE_PIN, GPIO.HIGH)
 
+# USB-Sticks by UUID
+#stick[("54D3-D098", "E9B7-83A1", "F054-0EB3", "C087-0BFB")]
+
 print("waiting for input")
 
 def white_off():
@@ -42,7 +46,7 @@ def start_recording(pin):
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("mount usb, start motion")
         try:
-            subprocess.run(["sudo", "mount", "/media/usb-video"])
+            subprocess.run(["sudo", "mount", "-a"])
         except Exception as e:
             print("Error on mounting device:")
             print(str(e))
