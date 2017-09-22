@@ -73,10 +73,12 @@ def button_handler(pin):
     global status
     if status == "recording":
         stop_recording()
+        return
     elif status == "idle":
         start_recording()
+        return
     else:
-        pass
+        return
 
 try:
     # Interrupt Event hinzufuegen. Auf steigende Flanke reagieren und ISR "Interrupt" deklarieren sowie Pin entprellen
