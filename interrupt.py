@@ -73,18 +73,16 @@ def button_handler(pin):
     global status
     if status == "recording":
         stop_recording()
-        return
     elif status == "idle":
         start_recording()
-        return
     else:
-        return
+        pass
 
 try:
     # Interrupt Event hinzufuegen. Auf steigende Flanke reagieren und ISR "Interrupt" deklarieren sowie Pin entprellen
     #GPIO.add_event_detect(TASTER_1, GPIO.RISING, callback=start_recording, bouncetime=200)
     #GPIO.add_event_detect(TASTER_2, GPIO.RISING, callback=stop_recording, bouncetime=200)
-    GPIO.add_event_detect(TASTER_1, GPIO.RISING, callback=button_handler, bouncetime=200)
+    GPIO.add_event_detect(TASTER_1, GPIO.RISING, callback=button_handler, bouncetime=1000)
     # keep script running
     while True:
         time.sleep(0.5)
