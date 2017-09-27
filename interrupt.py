@@ -45,11 +45,11 @@ def start_recording(pin):
         white_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("mount usb, start motion")
-        try:
-            subprocess.run(["sudo", "mount", "-a"])
-        except Exception as e:
-            print("Error on mounting device:")
-            print(str(e))
+        #try:
+        subprocess.run(["sudo", "mount", "-a"])
+        #except Exception as e:
+        #    print("Error on mounting device:")
+        #    print(str(e))
         subprocess.run(["sudo", "motion"])
         white_off()
         GPIO.output(GREEN_PIN, GPIO.HIGH)
