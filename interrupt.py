@@ -23,7 +23,7 @@ GPIO.setup(RED_PIN, GPIO.OUT)
 GPIO.setup(GREEN_PIN, GPIO.OUT)
 GPIO.setup(BLUE_PIN, GPIO.OUT)
 
-# Dictionary definieren. http://www.tutorialspoint.com/python/python_dictionary.htm
+# Status definieren
 status = "idle"
 GPIO.output(BLUE_PIN, GPIO.HIGH)
 
@@ -37,7 +37,7 @@ def white_off():
     GPIO.output(RED_PIN, GPIO.LOW)
     GPIO.output(GREEN_PIN, GPIO.LOW)
 
-# InternalStartGeschichte
+# Start record
 def start_recording(pin):
     global status
     if status == "idle":
@@ -50,12 +50,12 @@ def start_recording(pin):
         except Exception as e:
             print("Error on mounting device:")
             print(str(e))
-        subprocess.run(["sudo", "service", "motion", "start"])
+        subprocess.run(["sudo", "motion"])
         white_off()
         GPIO.output(GREEN_PIN, GPIO.HIGH)
         status = "recording"
 
-
+# Stop record
 def stop_recording(pin):
     global status
     if status == "recording":
@@ -63,7 +63,7 @@ def stop_recording(pin):
         white_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("stop motion, unmount usb")
-        subprocess.run(["sudo", "service", "motion", "stop"])
+        subprocess.run(["sudo", "killall", "-9", "motion"])
         subprocess.run(["sudo", "umount", "/media/usb-video"])
         white_off()
         GPIO.output(BLUE_PIN, GPIO.HIGH)
