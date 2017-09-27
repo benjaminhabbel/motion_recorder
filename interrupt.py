@@ -56,7 +56,7 @@ def start_recording(pin):
         print("mount usb, start motion")
         subprocess.run(["sudo", "mount", "/dev/sda1", "/media/usb-video"])
         time.sleep(5)
-        if os.path.ismount("/media/usb-video") == "TRUE":
+        if os.path.ismount("/media/usb-video") == "True":
             subprocess.run(["sudo", "motion"])
             white_off()
             GPIO.output(GREEN_PIN, GPIO.HIGH)
@@ -64,7 +64,7 @@ def start_recording(pin):
         else:
             error()
             GPIO.output(BLUE_PIN, GPIO.HIGH)
-            status == "idle"
+            status = "idle"
 
 # Stop record
 def stop_recording(pin):
