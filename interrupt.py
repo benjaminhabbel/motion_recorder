@@ -38,14 +38,13 @@ def white_off():
     GPIO.output(GREEN_PIN, GPIO.LOW)
 
 def error():
-	err = 0
-	white_off()
-	for i in range(20):
-		GPIO.output(RED_PIN, GPIO.HIGH)
-		time.sleep(0.2)
-		GPIO.output(RED_PIN, GPIO.LOW)
-		time.sleep(0.2)
-	
+    i = 0
+    white_off()
+    for i in range(20):
+        GPIO.output(RED_PIN, GPIO.HIGH)
+        time.sleep(0.2)
+        GPIO.output(RED_PIN, GPIO.LOW)
+        time.sleep(0.2)
 
 # Start record
 def start_recording(pin):
@@ -57,15 +56,15 @@ def start_recording(pin):
         print("mount usb, start motion")
         subprocess.run(["sudo", "mount", "/dev/sda1", "/media/usb-video"])
         time.sleep(5)
-	if os.path.ismount("/media/usb-video") == "TRUE":
-        	subprocess.run(["sudo", "motion"])
-        	white_off()
-        	GPIO.output(GREEN_PIN, GPIO.HIGH)
-        	status = "recording"
-	else:
-		error()
-		GPIO.output(BLUE_PIN, GPIO.HIGH)
-		status == "idle"
+        if os.path.ismount("/media/usb-video") == "TRUE":
+            subprocess.run(["sudo", "motion"])
+            white_off()
+            GPIO.output(GREEN_PIN, GPIO.HIGH)
+            status = "recording"
+        else:
+            error()
+            GPIO.output(BLUE_PIN, GPIO.HIGH)
+            status == "idle"
 
 # Stop record
 def stop_recording(pin):
