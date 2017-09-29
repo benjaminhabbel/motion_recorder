@@ -31,26 +31,26 @@ import os
 #| BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |
 #+-----+-----+---------+------+---+---Pi 3---+---+------+---------+-----+-----+
 
-#GPIO Pins
+# GPIO pins
 TASTER_1 = 12
 TASTER_2 = 16
 RED_PIN = 11
 GREEN_PIN = 13
 BLUE_PIN = 15
 
-# GPIO-Nummer als Pinreferenz waehlen
+# use GPIO board numbers
 GPIO.setmode(GPIO.BOARD)  
 
-# Taster als Input deklarieren
+# button = input
 GPIO.setup(TASTER_1, GPIO.IN)
 GPIO.setup(TASTER_2, GPIO.IN)
 
-# LED als Output deklarieren
+# LED = output
 GPIO.setup(RED_PIN, GPIO.OUT)
 GPIO.setup(GREEN_PIN, GPIO.OUT)
 GPIO.setup(BLUE_PIN, GPIO.OUT)
 
-# Status definieren
+# define state
 status = "idle"
 GPIO.output(BLUE_PIN, GPIO.HIGH)
 
@@ -59,26 +59,28 @@ GPIO.output(BLUE_PIN, GPIO.HIGH)
 
 print("waiting for input")
 
-def white_off():
+# LED off
+def led_off():
     GPIO.output(BLUE_PIN, GPIO.LOW)
     GPIO.output(RED_PIN, GPIO.LOW)
     GPIO.output(GREEN_PIN, GPIO.LOW)
 
+# error LED
 def error():
     i = 0
-    white_off()
+    led_off()
     for i in range(20):
         GPIO.output(RED_PIN, GPIO.HIGH)
         time.sleep(0.2)
         GPIO.output(RED_PIN, GPIO.LOW)
         time.sleep(0.2)
 
-# Start record
+# start record
 def start_recording(pin):
     global status
     if status == "idle":
         status = "switching"
-        white_off()
+        led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("mount usb, start motion")
         subprocess.run(["sudo", "mount", "/dev/sda1", "/media/usb-video"])
@@ -89,28 +91,28 @@ def start_recording(pin):
             status = "idle"
         else:
             subprocess.run(["sudo", "motion"])
-            white_off()
+            led_off()
             GPIO.output(GREEN_PIN, GPIO.HIGH)
             status = "recording"
 
-# Stop record
+# stop record
 def stop_recording(pin):
     global status
     if status == "recording":
         status = "switching"
-        white_off()
+        led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("stop motion, unmount usb")
         subprocess.run(["sudo", "killall", "-9", "motion"])
         subprocess.run(["sudo", "umount", "/media/usb-video"])
         time.sleep(5)
-        white_off()
+        led_off()
         GPIO.output(BLUE_PIN, GPIO.HIGH)
         status = "idle"
 
 
 try:
-    # Interrupt Event hinzufuegen. Auf steigende Flanke reagieren und ISR "Interrupt" deklarieren sowie Pin entprellen
+    # define interrupt, get rising signal, debounce pin
     GPIO.add_event_detect(TASTER_1, GPIO.RISING, callback=start_recording, bouncetime=200)
     GPIO.add_event_detect(TASTER_2, GPIO.RISING, callback=stop_recording, bouncetime=200)
     # keep script running
