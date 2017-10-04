@@ -98,7 +98,7 @@ class MotionRecorder():
             GPIO.output(self.RED_PIN, GPIO.LOW)
             time.sleep(0.1)
 
-    def start_recording(self):
+    def start_recording(self, pin):
         '''
         mount flash drive and start motion
         '''
@@ -119,7 +119,7 @@ class MotionRecorder():
                 GPIO.output(self.GREEN_PIN, GPIO.HIGH)
                 self.status = "recording"
 
-    def stop_recording(self):
+    def stop_recording(self, pin):
         '''
         stop motion and un-mount flash drives
         '''
