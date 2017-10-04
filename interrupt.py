@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import RPi.GPIO as GPIO
 import time
 import subprocess
@@ -83,14 +84,13 @@ def start_recording(pin):
         led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("mount usb, start motion")
-        try:
-            subprocess.check_call([
-                "sudo",
-                "mount",
-                "/dev/sda1",
-                "/media/usb-video"
-            ])
-        except:
+        subprocess.call([
+            "sudo",
+            "mount",
+            "/dev/sda1",
+            "/media/usb-video"
+        ])
+        if not os.path.ismount('/media/usb-video'):
             error()
             GPIO.output(BLUE_PIN, GPIO.HIGH)
             status = "idle"
