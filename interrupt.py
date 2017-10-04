@@ -39,7 +39,7 @@ GREEN_PIN = 13
 BLUE_PIN = 15
 
 # use GPIO board numbers
-GPIO.setmode(GPIO.BOARD)  
+GPIO.setmode(GPIO.BOARD)
 
 # button = input
 GPIO.setup(TASTER_1, GPIO.IN)
@@ -83,17 +83,23 @@ def start_recording(pin):
         led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("mount usb, start motion")
-        subprocess.check_call(["sudo", "mount", "/dev/sda1", "/media/usb-video"])
-        # time.sleep(5)
-        if not os.path.ismount("/media/usb-video"):
+        try:
+            subprocess.check_call([
+                "sudo",
+                "mount",
+                "/dev/sda1",
+                "/media/usb-video"
+            ])
+        except:
             error()
             GPIO.output(BLUE_PIN, GPIO.HIGH)
             status = "idle"
-        else:
-            subprocess.check_call(["sudo", "motion"])
-            led_off()
-            GPIO.output(GREEN_PIN, GPIO.HIGH)
-            status = "recording"
+            return
+
+        subprocess.check_call(["sudo", "motion"])
+        led_off()
+        GPIO.output(GREEN_PIN, GPIO.HIGH)
+        status = "recording"
 
 # stop record
 def stop_recording(pin):
@@ -103,9 +109,8 @@ def stop_recording(pin):
         led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("stop motion, unmount usb")
-        subprocess.check_call(["sudo", "killall", "-9", "motion"])
-        subprocess.check_call(["sudo", "umount", "/media/usb-video"])
-        # time.sleep(2.5)
+        subprocess.call(["sudo", "killall", "-9", "motion"])
+        subprocess.call(["sudo", "umount", "/media/usb-video"])
         led_off()
         GPIO.output(BLUE_PIN, GPIO.HIGH)
         status = "idle"
@@ -113,13 +118,22 @@ def stop_recording(pin):
 
 try:
     # define interrupt, get rising signal, debounce pin
-    GPIO.add_event_detect(TASTER_1, GPIO.RISING, callback=start_recording, bouncetime=2000)
-    GPIO.add_event_detect(TASTER_2, GPIO.RISING, callback=stop_recording, bouncetime=2000)
+    GPIO.add_event_detect(
+        TASTER_1,
+        GPIO.RISING,
+        callback=start_recording,
+        bouncetime=1000
+    )
+    GPIO.add_event_detect(
+        TASTER_2,
+        GPIO.RISING,
+        callback=stop_recording,
+        bouncetime=1000
+    )
     # keep script running
     while True:
         time.sleep(0.5)
-        
-except (KeyboardInterrupt, SystemExit):
-   GPIO.cleanup()
-   print("\nQuit\n")
 
+except (KeyboardInterrupt, SystemExit):
+    GPIO.cleanup()
+    print("\nQuit\n")
