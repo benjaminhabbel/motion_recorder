@@ -71,9 +71,9 @@ def error():
     led_off()
     for i in range(10):
         GPIO.output(RED_PIN, GPIO.HIGH)
-        time.sleep(0.1)
+        time.sleep(0.05)
         GPIO.output(RED_PIN, GPIO.LOW)
-        time.sleep(0.1)
+        time.sleep(0.05)
 
 # start record
 def start_recording(pin):
