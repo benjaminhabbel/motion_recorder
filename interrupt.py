@@ -69,11 +69,11 @@ def led_off():
 def error():
     i = 0
     led_off()
-    for i in range(20):
+    for i in range(10):
         GPIO.output(RED_PIN, GPIO.HIGH)
-        time.sleep(0.2)
+        time.sleep(0.1)
         GPIO.output(RED_PIN, GPIO.LOW)
-        time.sleep(0.2)
+        time.sleep(0.1)
 
 # start record
 def start_recording(pin):
@@ -85,7 +85,7 @@ def start_recording(pin):
         print("mount usb, start motion")
         subprocess.run(["sudo", "mount", "/dev/sda1", "/media/usb-video"])
         time.sleep(5)
-        if os.path.ismount("/media/usb-video") == "False":
+        if not os.path.ismount("/media/usb-video"):
             error()
             GPIO.output(BLUE_PIN, GPIO.HIGH)
             status = "idle"
@@ -113,8 +113,8 @@ def stop_recording(pin):
 
 try:
     # define interrupt, get rising signal, debounce pin
-    GPIO.add_event_detect(TASTER_1, GPIO.RISING, callback=start_recording, bouncetime=200)
-    GPIO.add_event_detect(TASTER_2, GPIO.RISING, callback=stop_recording, bouncetime=200)
+    GPIO.add_event_detect(TASTER_1, GPIO.RISING, callback=start_recording, bouncetime=10000)
+    GPIO.add_event_detect(TASTER_2, GPIO.RISING, callback=stop_recording, bouncetime=10000)
     # keep script running
     while True:
         time.sleep(0.5)
