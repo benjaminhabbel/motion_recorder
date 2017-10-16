@@ -84,6 +84,7 @@ def start_recording(pin):
         led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("mount usb, start motion")
+        subprocess.call(["sudo", "mkdir", "/media/usb-video"])
         subprocess.call([
             "sudo",
             "mount",
@@ -111,7 +112,9 @@ def stop_recording(pin):
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("stop motion, unmount usb")
         subprocess.call(["sudo", "killall", "-9", "motion"])
+        subprocess.call(["sudo", "sync"])
         subprocess.call(["sudo", "umount", "/media/usb-video"])
+        subprocess.call(["sudo", "rm", "-r", "/media/usb-video"])
         led_off()
         GPIO.output(BLUE_PIN, GPIO.HIGH)
         status = "idle"
