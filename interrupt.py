@@ -55,7 +55,10 @@ status = "idle"
 GPIO.output(BLUE_PIN, GPIO.HIGH)
 
 # USB-Sticks by UUID
-# stick[("54D3-D098", "E9B7-83A1", "F054-0EB3", "C087-0BFB")]
+# LABEL="mp-video-1a" UUID="699c84be-41e2-423c-819a-02c0dbdf9664"
+# LABEL="mp-video-1b" UUID="a4724cb0-f5d6-424d-a34a-f28b3ece39a8"
+# LABEL="mp-video-2a" UUID="a5025313-3cef-407a-b320-531c64f49083"
+# LABEL="mp-video-2b" UUID="176d600d-646b-40d7-83ec-bb13641fb03e"
 
 
 # LED off
