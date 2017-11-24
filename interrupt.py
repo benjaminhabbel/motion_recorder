@@ -31,6 +31,10 @@ import subprocess
 #| BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |
 #+-----+-----+---------+------+---+---Pi 3---+---+------+---------+-----+-----+
 
+# sudo apt install pip
+# pip install ffmpeg-python
+#import ffmpeg
+
 # GPIO pins
 TASTER_1 = 12
 TASTER_2 = 16
@@ -86,7 +90,7 @@ def start_recording(pin):
         status = "switching"
         led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
-        print("mount usb, start motion")
+        print("mount usb, start ffmpeg")
         subprocess.call(["sudo", "mkdir", "/media/usb-video"])
         subprocess.call([
             "sudo",
@@ -101,8 +105,8 @@ def start_recording(pin):
             return
 
         #subprocess.check_call(["sudo", "motion"])
-	#subprocess.call("ffmpeg -i /dev/video0 -r 3 -an -s 540x360 -t 3600 camera1-.avi".split())
-	#stream_segment segment_time 3600 segment_list_entry_prefix camera1- strftime 1
+        subprocess.call(["cd", "/media/usb-video"])
+	    subprocess.call("ffmpeg -i /dev/video0 -vf "drawtext=fontsize=12: text='%{localtime\:%T}': fontcolor=white: x=1: y=1: rate=3" -r 3 -an -f segment -segment_time 3600 -strftime 1 camera1-%Y%m%d-%H%M.avi".split())
         led_off()
         GPIO.output(GREEN_PIN, GPIO.HIGH)
         status = "recording"
@@ -115,8 +119,8 @@ def stop_recording(pin):
         status = "switching"
         led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
-        print("stop motion, unmount usb")
-        subprocess.call(["sudo", "killall", "-9", "motion"])
+        print("stop ffmpeg, unmount usb")
+        subprocess.call(["exit 1", shell=False])
         subprocess.call(["sudo", "sync"])
         subprocess.call(["sudo", "umount", "/media/usb-video"])
         subprocess.call(["sudo", "rm", "-r", "/media/usb-video"])
@@ -148,3 +152,4 @@ if __name__ == "__main__":
     finally:
         GPIO.cleanup()
         print("\nQuit\n")
+
