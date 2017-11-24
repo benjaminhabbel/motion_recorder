@@ -100,7 +100,9 @@ def start_recording(pin):
             status = "idle"
             return
 
-        subprocess.check_call(["sudo", "motion"])
+        #subprocess.check_call(["sudo", "motion"])
+	#subprocess.call("ffmpeg -i /dev/video0 -r 3 -an -s 540x360 -t 3600 camera1-.avi".split())
+	#stream_segment segment_time 3600 segment_list_entry_prefix camera1- strftime 1
         led_off()
         GPIO.output(GREEN_PIN, GPIO.HIGH)
         status = "recording"
