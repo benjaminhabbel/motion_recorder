@@ -3,6 +3,7 @@ import os
 import RPi.GPIO as GPIO
 import time
 import subprocess
+from ffmpegwrapper import FFmpeg, Input, Output, VideoFilter
 
 #+-----+-----+---------+------+---+---Pi 3---+---+------+---------+-----+-----+
 #| BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |
@@ -32,8 +33,8 @@ import subprocess
 #+-----+-----+---------+------+---+---Pi 3---+---+------+---------+-----+-----+
 
 # sudo apt install pip
-# pip install ffmpeg-python
-#import ffmpeg
+# pip install ffmpegwrapper
+#import ffmpegwrapper
 
 # GPIO pins
 TASTER_1 = 12
@@ -91,8 +92,11 @@ def start_recording(pin):
         led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("mount usb, start ffmpeg")
-        subprocess.call(["sudo", "mkdir", "/media/usb-video"])
-        subprocess.call([
+        #subprocess.call(["sudo", "mkdir", "/media/usb-video"])
+        if not os.path.exists('/media/usb-video'):
+            os.mkdirs('/media/usb-video')
+            return
+	subprocess.call([
             "sudo",
             "mount",
             "/dev/sda1",
@@ -105,8 +109,13 @@ def start_recording(pin):
             return
 
         #subprocess.check_call(["sudo", "motion"])
-        subprocess.call(["cd", "/media/usb-video"])
-	    subprocess.call("ffmpeg -i /dev/video0 -vf "drawtext=fontsize=12: text='%{localtime\:%T}': fontcolor=white: x=1: y=1: rate=3" -r 3 -an -f segment -segment_time 3600 -strftime 1 camera1-%Y%m%d-%H%M.avi".split())
+        os.chdir('/media/usb-video')
+        videofilter1 = VideoFilter().drawtext('fontsize=12', 'text="%(localtime\:%T)', 'fontcolor=white', 'x=1', 'y=1', 'rate=3')
+	videofilter2 = VideoFilter().file('segment', 'segment_time=3600', 'strftime=1')
+	input_video = Input('/dev/video0')
+	output_video = Output('camera1-%Y%m%d-%H%M.avi', videofilter1, videofilter2)
+	FFmpeg('ffmpeg', input_video, output_video)
+	#subprocess.Popen(["ffmpeg -i /dev/video0 -vf drawtext=fontsize=12: text='%{localtime\:%T}': fontcolor=white: x=1: y=1: rate=3 -r 3 -an -f segment -segment_time 3600 -strftime 1 camera1-%Y%m%d-%H%M.avi"])
         led_off()
         GPIO.output(GREEN_PIN, GPIO.HIGH)
         status = "recording"
@@ -120,7 +129,7 @@ def stop_recording(pin):
         led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("stop ffmpeg, unmount usb")
-        subprocess.call(["exit 1", shell=False])
+        subprocess.call(["sudo", "killall", "ffmpeg"])
         subprocess.call(["sudo", "sync"])
         subprocess.call(["sudo", "umount", "/media/usb-video"])
         subprocess.call(["sudo", "rm", "-r", "/media/usb-video"])
