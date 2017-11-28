@@ -110,13 +110,15 @@ def start_recording(pin):
 
         #subprocess.check_call(["sudo", "motion"])
         os.chdir('/media/usb-video')
-        videofilter1 = VideoFilter().drawtext('fontsize=12', 'text="%(localtime\:%T)', 'fontcolor=white', 'x=1', 'y=1', 'rate=3')
-	videofilter2 = VideoFilter().file('segment', 'segment_time=3600', 'strftime=1')
-	input_video = Input('/dev/video0')
-	output_video = Output('camera1-%Y%m%d-%H%M.avi', videofilter1, videofilter2)
-	FFmpeg('ffmpeg', input_video, output_video)
+        #videofilter1 = VideoFilter().drawtext('fontsize=12', 'text="%(localtime\:%T)', 'fontcolor=white', 'x=1', 'y=1', 'rate=3')
+	#videofilter2 = VideoFilter().file('segment', 'segment_time=3600', 'strftime=1')
+	#input_video = Input('/dev/video0')
+	#output_video = Output('camera1-%Y%m%d-%H%M.avi', videofilter1, videofilter2)
+	#FFmpeg('ffmpeg', input_video, output_video)
 	#subprocess.Popen(["ffmpeg -i /dev/video0 -vf drawtext=fontsize=12: text='%{localtime\:%T}': fontcolor=white: x=1: y=1: rate=3 -r 3 -an -f segment -segment_time 3600 -strftime 1 camera1-%Y%m%d-%H%M.avi"])
-        led_off()
+        cmd = "ffmpeg -i /dev/video0 -vf drawtext=fontsize=12: text='%{localtime\:%T}': fontcolor=white: x=1: y=1: rate=3 -r 3 -an -f segment -segment_time 3600 -strftime 1 camera1-%Y%m%d-%H%M.avi"
+	subprocess.call(cmd, shell=True)
+	led_off()
         GPIO.output(GREEN_PIN, GPIO.HIGH)
         status = "recording"
 
