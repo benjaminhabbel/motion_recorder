@@ -5,6 +5,7 @@ import time
 import subprocess
 import logging
 import shutil
+import sys
 
 # GPIO pins
 TASTER_1 = 12
