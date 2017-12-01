@@ -32,10 +32,32 @@ GPIO.output(BLUE_PIN, GPIO.HIGH)
 # debug logging
 logSrc = '/home/pi/motion_recorder/pig_recorder.log'
 logDst = '/media/usb-video/pig_recorder.log'
+
+class StreamToLogger(object):
+   """
+   Fake file-like stream object that redirects writes to a logger instance.
+   """
+   def __init__(self, logger, log_level=logging.INFO):
+      self.logger = logger
+      self.log_level = log_level
+      self.linebuf = ''
+
+   def write(self, buf):
+      for line in buf.rstrip().splitlines():
+         self.logger.log(self.log_level, line.rstrip())
+
 logging.basicConfig(filename=logSrc,
                 format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
                 datefmt='%Y/%m/%d - %H:%M:%S',
                 level=logging.DEBUG)
+
+stdout_logger = logging.getLogger('STDOUT')
+sl = StreamToLogger(stdout_logger, logging.INFO)
+sys.stdout = sl
+
+stderr_logger = logging.getLogger('STDERR')
+sl = StreamToLogger(stderr_logger, logging.ERROR)
+sys.stderr = sl
 
 # USB-Sticks by UUID
 # LABEL="mp-video-1a" UUID="699c84be-41e2-423c-819a-02c0dbdf9664"
@@ -144,3 +166,4 @@ if __name__ == "__main__":
     finally:
         GPIO.cleanup()
         print("\nQuit\n")
+
