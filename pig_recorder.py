@@ -3,8 +3,8 @@ import os
 import RPi.GPIO as GPIO
 import time
 import subprocess
-
-#sudo chown -R pi:pi /media/
+import logging
+import shutil
 
 # GPIO pins
 TASTER_1 = 12
@@ -28,6 +28,14 @@ GPIO.setup(BLUE_PIN, GPIO.OUT)
 # define state
 status = "idle"
 GPIO.output(BLUE_PIN, GPIO.HIGH)
+
+# debug logging
+logSrc = '/home/pi/motion_recorder/pig_recorder.log'
+logDst = '/media/usb-video/pig_recorder.log'
+logging.basicConfig(filename=logSrc,
+                format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
+                datefmt='%Y/%m/%d - %H:%M:%S',
+                level=logging.DEBUG)
 
 # USB-Sticks by UUID
 # LABEL="mp-video-1a" UUID="699c84be-41e2-423c-819a-02c0dbdf9664"
@@ -60,6 +68,7 @@ def start_recording(pin):
         led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("mount usb, start ffmpeg")
+        logging.info("Button 1 -> mount usb, start ffmpeg")
         if not os.path.exists('/media/usb-video'):
             os.mkdir('/media/usb-video')
         subprocess.call([
@@ -93,6 +102,8 @@ def stop_recording(pin):
         led_off()
         GPIO.output(RED_PIN, GPIO.HIGH)
         print("stop ffmpeg, unmount usb")
+        logging.info("Button 2 -> stop ffmpeg, unmount usb")
+        shutil.copyfile(logSrc, logDst)
         subprocess.call(["sudo", "killall", "ffmpeg"])
         subprocess.call(["sudo", "sync"])
         try:
@@ -100,6 +111,7 @@ def stop_recording(pin):
             subprocess.check_call(["sudo", "umount", "/media/usb-video"])
         except:
             print('could not unmount drive')
+            logging.error("could not unmount drive")
             status = "recording"
             return
         subprocess.call(["sudo", "rm", "-r", "/media/usb-video"])
@@ -110,6 +122,7 @@ def stop_recording(pin):
 
 if __name__ == "__main__":
     print("waiting for input")
+    logging.info("waiting for input")
     try:
         # define interrupt, get rising signal, debounce pin
         GPIO.add_event_detect(
