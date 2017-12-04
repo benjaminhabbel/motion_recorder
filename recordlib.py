@@ -124,24 +124,15 @@ def start_recording(pin):
             datetime.datetime.today(),
             "%Y%m%d_%H%M%S"
         )
-        while True:
-            subprocess.Popen([
-                "ffmpeg", "-i", "/dev/video0",
-                "-vf", "drawtext=x=8: y=8: box=1: fontcolor=white: boxcolor=black: expansion=strftime: text='%T'",
-                "-r", "3",
-                "camera1-{0}.avi".format(date)
-            ])
-            led_off()
-            GPIO.output(GREEN_PIN, GPIO.HIGH)
-            status = "recording"
-        except:
-            GPIO.add_event_detect(
-            TASTER_2,
-            GPIO.RISING,
-            callback=stop_recording,
-            bouncetime=1000
-        )
-        pass
+        subprocess.Popen([
+            "ffmpeg", "-i", "/dev/video0",
+            "-vf", "drawtext=x=8: y=8: box=1: fontcolor=white: boxcolor=black: expansion=strftime: text='%T'",
+            "-r", "3",
+            "camera1-{0}.avi".format(date)
+        ])
+        led_off()
+        GPIO.output(GREEN_PIN, GPIO.HIGH)
+        status = "recording"
 
 
 # stop record
