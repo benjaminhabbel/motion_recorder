@@ -48,6 +48,9 @@ class StreamToLogger(object):
       for line in buf.rstrip().splitlines():
          self.logger.log(self.log_level, line.rstrip())
 
+   def flush(self, flush):
+      pass
+
 logging.basicConfig(filename=logSrc,
                 format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
                 datefmt='%Y/%m/%d - %H:%M:%S',
@@ -116,7 +119,7 @@ def start_recording(pin):
                 "ffmpeg", "-i", "/dev/video0",
                 "-vf", "drawtext=x=8: y=8: box=1: fontcolor=white: boxcolor=black: expansion=strftime: text='%T'",
                 "-r", "3",
-                "-t", "10", "-strftime", "1", "camera1-%Y%m%d-%H%M%S.avi"
+                "-t", "10", "camera1-%03d.avi"
             ])
             led_off()
             GPIO.output(GREEN_PIN, GPIO.HIGH)
