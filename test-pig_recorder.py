@@ -116,7 +116,7 @@ def start_recording(pin):
                 "ffmpeg", "-i", "/dev/video0",
                 "-vf", "drawtext=x=8: y=8: box=1: fontcolor=white: boxcolor=black: expansion=strftime: text='%T'",
                 "-r", "3",
-                "-t", "10", "-strftime", "1", "camera1-%Y%m%d-%H%M%S.avi"
+                "-t", "10", "-strftime", "1", "camera1-%03d.avi"
             ])
             led_off()
             GPIO.output(GREEN_PIN, GPIO.HIGH)
