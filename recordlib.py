@@ -94,7 +94,7 @@ def error():
 
 
 # start record
-def start_recording(pin):
+def start_recording(pin, name=""):
     global status
     if status == "idle":
         status = "switching"
@@ -120,15 +120,12 @@ def start_recording(pin):
         #rec = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, bufsize=10**8)
         #for line in rec.stdout:
         #    logging.info(line)
-        date = datetime.datetime.strftime(
-            datetime.datetime.today(),
-            "%Y%m%d_%H%M%S"
-        )
+
         subprocess.Popen([
             "ffmpeg", "-i", "/dev/video0",
             "-vf", "drawtext=x=8: y=8: box=1: fontcolor=white: boxcolor=black: expansion=strftime: text='%T'",
             "-r", "3",
-            "camera1-{0}.avi".format(date)
+            "camera1-{0}.avi".format(name)
         ])
         led_off()
         GPIO.output(GREEN_PIN, GPIO.HIGH)
