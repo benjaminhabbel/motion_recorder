@@ -38,11 +38,11 @@ def initialize():
     GPIO.output(BLUE_PIN, GPIO.HIGH)
 
     logging.basicConfig(
-    filename=logSrc,
-    format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
-    datefmt='%Y/%m/%d - %H:%M:%S',
-    level=logging.DEBUG
-)
+        filename=logSrc,
+        format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
+        datefmt='%Y/%m/%d - %H:%M:%S',
+        level=logging.DEBUG
+    )
 
     stdout_logger = logging.getLogger('STDOUT')
     sl = StreamToLogger(stdout_logger, logging.INFO)
@@ -66,7 +66,7 @@ class StreamToLogger(object):
         for line in buf.rstrip().splitlines():
             self.logger.log(self.log_level, line.rstrip())
 
-    def flush(self, flush):
+    def flush(self):
         pass
 
 
