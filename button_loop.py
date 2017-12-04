@@ -2,6 +2,7 @@ import time
 import recordlib
 
 if __name__ == "__main__":
+    recordlib.initialize()
     print("waiting for input")
     recordlib.logging.info("waiting for input")
     try:
