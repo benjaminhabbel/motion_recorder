@@ -1,5 +1,5 @@
 import os
-from . import recordlib
+import recordlib
 
 if __name__ == "__main__":
     if os.path.ismount('/media/usb-video'):

@@ -1,5 +1,5 @@
 import time
-from . import recordlib
+import recordlib
 
 if __name__ == "__main__":
     print("waiting for input")
