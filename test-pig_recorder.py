@@ -107,13 +107,21 @@ def start_recording(pin):
             status = "idle"
             return
         os.chdir('/media/usb-video')
-        cmd="ffmpeg -i /dev/video0 -vf drawtext=x=8: y=8: box=1: fontcolor=white: boxcolor=black: expansion=strftime: text='%T' -r 3 -hide_banner -f segment -segment_time 3600 -strftime 1 camera1-%Y%m%d-%H%M%S.avi"
-        rec = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, bufsize=10**8)
-        for line in rec.stdout:
-            logging.info(line)
-        led_off()
-        GPIO.output(GREEN_PIN, GPIO.HIGH)
-        status = "recording"
+        #cmd="ffmpeg -i /dev/video0 -vf drawtext=x=8: y=8: box=1: fontcolor=white: boxcolor=black: expansion=strftime: text='%T' -r 3 -hide_banner -f segment -segment_time 3600 -strftime 1 camera1-%Y%m%d-%H%M%S.avi"
+        #rec = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, bufsize=10**8)
+        #for line in rec.stdout:
+        #    logging.info(line)
+        while True:
+            subprocess.Popen([
+                "ffmpeg", "-i", "/dev/video0",
+                "-vf", "drawtext=x=8: y=8: box=1: fontcolor=white: boxcolor=black: expansion=strftime: text='%T'",
+                "-r", "3",
+                "-t", "10", "-strftime", "1", "camera1-%Y%m%d-%H%M%S.avi"
+            ])
+            led_off()
+            GPIO.output(GREEN_PIN, GPIO.HIGH)
+            status = "recording"
+        pass
 
 
 # stop record
