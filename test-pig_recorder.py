@@ -124,6 +124,13 @@ def start_recording(pin):
             led_off()
             GPIO.output(GREEN_PIN, GPIO.HIGH)
             status = "recording"
+        except:
+            GPIO.add_event_detect(
+            TASTER_2,
+            GPIO.RISING,
+            callback=stop_recording,
+            bouncetime=1000
+        )
         pass
 
 
