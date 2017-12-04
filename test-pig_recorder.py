@@ -48,6 +48,9 @@ class StreamToLogger(object):
       for line in buf.rstrip().splitlines():
          self.logger.log(self.log_level, line.rstrip())
 
+    def flush(self, flush):
+        pass
+
 logging.basicConfig(filename=logSrc,
                 format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
                 datefmt='%Y/%m/%d - %H:%M:%S',
