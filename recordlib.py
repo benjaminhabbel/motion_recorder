@@ -22,6 +22,9 @@ logSrc = '/home/pi/motion_recorder/test-pig_recorder.log'
 logDst = '/media/usb-video/pig_recorder.log'
 
 def initialize():
+    """
+    initialize GPIO pins; debug-logger
+    """
     # use GPIO board numbers
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
@@ -76,14 +79,19 @@ class StreamToLogger(object):
 # LABEL="mp-video-2a" UUID="a5025313-3cef-407a-b320-531c64f49083"
 # LABEL="mp-video-2b" UUID="176d600d-646b-40d7-83ec-bb13641fb03e"
 
-# LED off
 def led_off():
+    """
+    LED off
+    """
     GPIO.output(BLUE_PIN, GPIO.LOW)
     GPIO.output(RED_PIN, GPIO.LOW)
     GPIO.output(GREEN_PIN, GPIO.LOW)
+    
 
-# error LED
 def error():
+    """
+    ERROR LED
+    """
     i = 0
     led_off()
     for i in range(10):
@@ -91,10 +99,12 @@ def error():
         time.sleep(0.05)
         GPIO.output(RED_PIN, GPIO.LOW)
         time.sleep(0.05)
+        
 
-
-# start record
 def start_recording(pin, name=""):
+    """
+    mount usb-device, start record video with ffmpeg
+    """
     global status
     if status == "idle":
         status = "switching"
@@ -132,8 +142,10 @@ def start_recording(pin, name=""):
         status = "recording"
 
 
-# stop record
 def stop_recording(pin):
+    """
+    stop record video, sync & unmount usb-device
+    """
     global status
     if status == "recording":
         status = "switching"
