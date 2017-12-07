@@ -6,7 +6,6 @@ import subprocess
 import logging
 import shutil
 import sys
-import datetime
 from datetime import datetime
 
 
@@ -126,10 +125,10 @@ class PigRecorder():
             except Exception as e:
                 logging.error(e)
                 self.error()
+                self.set_status('idle')
                 return False
 
         return os.path.ismount(self.video_path)
-
 
     def unmount_drive(self):
         if not os.path.ismount(self.video_path):
@@ -150,6 +149,7 @@ class PigRecorder():
         except Exception as e:
             logging.error("could not unmount drive")
             logging.error(e)
+            self.set_status('idle')
             return False
 
         try:
@@ -157,13 +157,13 @@ class PigRecorder():
         except Exception as e:
             logging.error("could not remove usb-video directory")
             logging.error(e)
+            self.set_status('idle')
             return False
 
         logging.info('unmounting complete')
         self.led_off()
         GPIO.output(self.BLUE_PIN, GPIO.HIGH)
         return True
-
 
     def start_recording(self, pin):
         '''
@@ -177,10 +177,10 @@ class PigRecorder():
                 "-vf", "drawtext=x=8: y=8: box=1: fontcolor=white: boxcolor=black: expansion=strftime: text='%T'",
                 "-r", "3",
                 "camera1-{}.avi".format(
-                   datetime.strftime(
-                      rec_time,
-                      "%Y%m%d-%H%M%S"
-                   )
+                    datetime.strftime(
+                        rec_time,
+                        "%Y%m%d-%H%M%S"
+                    )
                 )
             ])
             self.set_status('recording')
@@ -193,7 +193,6 @@ class PigRecorder():
             logging.info('killing ffmpeg')
             subprocess.call(["sudo", "killall", "ffmpeg"])
             self.unmount_drive()
-
 
     def restart_recording(self):
         if self.status == "recording":
@@ -242,4 +241,3 @@ if __name__ == "__main__":
     finally:
         GPIO.cleanup()
         print("\nQuit\n")
-
