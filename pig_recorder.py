@@ -65,17 +65,22 @@ class PigRecorder():
             bouncetime=1000
         )
 
+        logging.basicConfig(
+           filename=self.log_src,
+           format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
+           datefmt='%Y/%m/%d-%H:%M:%S',
+           level=logging.DEBUG
+        )
+
         stdout_logger = logging.getLogger('STDOUT')
         sys.stdout = StreamToLogger(
             stdout_logger,
-            self.log_src,
             logging.INFO
         )
 
         stderr_logger = logging.getLogger('STDERR')
         sys.stderr = StreamToLogger(
             stderr_logger,
-            self.log_src,
             logging.ERROR
         )
 
@@ -116,7 +121,7 @@ class PigRecorder():
         if not os.path.exists(self.video_path):
             try:
                 os.mkdir(self.video_path)
-                subprocess.call([
+                subprocess.check_call([
                     "sudo",
                     "mount",
                     "/dev/sda1",
@@ -125,6 +130,7 @@ class PigRecorder():
             except Exception as e:
                 logging.error(e)
                 self.error()
+                os.rmdir(self.video_path)
                 self.set_status('idle')
                 return False
 
@@ -161,8 +167,7 @@ class PigRecorder():
             return False
 
         logging.info('unmounting complete')
-        self.led_off()
-        GPIO.output(self.BLUE_PIN, GPIO.HIGH)
+        self.set_status('idle')
         return True
 
     def start_recording(self, pin):
@@ -173,7 +178,7 @@ class PigRecorder():
             rec_time = datetime.today()
             os.chdir(self.video_path)
             subprocess.Popen([
-                "ffmpeg", "-i", "/dev/video0",
+                "sudo", "ffmpeg", "-i", "/dev/video0",
                 "-vf", "drawtext=x=8: y=8: box=1: fontcolor=white: boxcolor=black: expansion=strftime: text='%T'",
                 "-r", "3",
                 "camera1-{}.avi".format(
@@ -190,6 +195,7 @@ class PigRecorder():
         stop recording
         '''
         if self.status == "recording":
+            self.set_status('idle')
             logging.info('killing ffmpeg')
             subprocess.call(["sudo", "killall", "ffmpeg"])
             self.unmount_drive()
@@ -198,6 +204,7 @@ class PigRecorder():
         if self.status == "recording":
             logging.info('killing ffmpeg')
             subprocess.call(["sudo", "killall", "ffmpeg"])
+            self.set_status('idle')
             self.start_recording(0)
 
 
@@ -206,22 +213,17 @@ class StreamToLogger(object):
     Fake file-like stream object that redirects
     writes to a logger instance.
     """
-    def __init__(self, logger, log_src, log_level=logging.INFO):
+    def __init__(self, logger, log_level=logging.INFO):
         self.logger = logger
         self.log_level = log_level
         self.linebuf = ''
-        self.log_src = log_src
 
     def write(self, buf):
         for line in buf.rstrip().splitlines():
             self.logger.log(self.log_level, line.rstrip())
 
-        logging.basicConfig(
-           filename=self.log_src,
-           format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
-           datefmt='%Y/%m/%d-%H:%M:%S',
-           level=logging.DEBUG
-        )
+    def flush(self):
+        pass
 
 
 if __name__ == "__main__":
@@ -239,5 +241,6 @@ if __name__ == "__main__":
             time.sleep(0.5)
 
     finally:
+        recorder.stop_recording(0)
         GPIO.cleanup()
         print("\nQuit\n")
