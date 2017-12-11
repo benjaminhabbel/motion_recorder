@@ -118,8 +118,17 @@ class PigRecorder():
         self.set_status('switching')
         logging.info("mounting usb")
 
-        if not os.path.exists(self.video_path):
+        if os.path.exists(self.video_path):
             try:
+                subprocess.call(["sudo", "rm", "-r", self.video_path])
+            except Exception as e:
+                logging.error(e)
+                self.error()
+                os.rmdir(self.video_path)
+                self.set_status('idle')
+                return False
+                
+            else:
                 os.mkdir(self.video_path)
                 subprocess.check_call([
                     "sudo",
