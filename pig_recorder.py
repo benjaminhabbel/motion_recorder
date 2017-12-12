@@ -128,20 +128,20 @@ class PigRecorder():
                 self.set_status('idle')
                 return False
                 
-            else:
-                os.mkdir(self.video_path)
-                subprocess.check_call([
-                    "sudo",
-                    "mount",
-                    "/dev/sda1",
-                    self.video_path
-                ])
-            except Exception as e:
-                logging.error(e)
-                self.error()
-                os.rmdir(self.video_path)
-                self.set_status('idle')
-                return False
+        try:
+            os.mkdir(self.video_path)
+            subprocess.check_call([
+                "sudo",
+                "mount",
+                "/dev/sda1",
+                self.video_path
+            ])
+        except Exception as e:
+            logging.error(e)
+            self.error()
+            os.rmdir(self.video_path)
+            self.set_status('idle')
+            return False
 
         return os.path.ismount(self.video_path)
 
